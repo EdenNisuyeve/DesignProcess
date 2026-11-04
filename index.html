@@ -273,6 +273,15 @@ p b{color:var(--ink);font-weight:700}
   .num{margin-bottom:4px}
 }
 @media (max-height:560px){
+  /* "About Pi": the final image fills the height on the left, the three tries stack on the right */
+  .explore{width:auto;max-width:100%;grid-template-columns:auto auto;grid-template-rows:repeat(3,auto);align-items:start;gap:8px}
+  .explore .big{grid-column:1;grid-row:1 / span 3}
+  .explore .big img{width:auto;max-height:none;height:calc(var(--avail) - 30px);max-width:100%}
+  .explore figure .th{height:calc((var(--avail) - 30px) / 3 - 22px);width:auto}
+  .explore .lbl{margin-top:2px}
+  /* phone screenshots: thinner frame, softer corners */
+  .phone{padding:2.5px;border-radius:11px}
+  .phone img{border-radius:9px}
   .side{width:min(96px,calc((var(--avail) - 70px) / 2))}
   .side figcaption{padding:3px 6px;font-size:10px}.side figcaption small{display:none}
   .post video{width:min(calc(100% - 116px),calc(var(--avail) - 30px))}
