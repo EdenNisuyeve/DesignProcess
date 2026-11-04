@@ -15,7 +15,10 @@
   --ink:#0B1F33; --muted:#53657A; --soft:#8796A6;
   --teal:#0A9AA2; --turq:#00C2CB;
   --head:64px; --foot:64px; --pad:clamp(20px,5vw,80px);
-  --avail:calc(100vh - var(--head) - var(--foot));
+  /* safe areas keep content away from the notch and the home bar on phones */
+  --sl:env(safe-area-inset-left,0px); --sr:env(safe-area-inset-right,0px); --sb:env(safe-area-inset-bottom,0px);
+  --vh:100vh;
+  --avail:calc(var(--vh) - var(--head) - var(--foot) - var(--sb));
   --ease:cubic-bezier(.22,.8,.24,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -44,8 +47,13 @@ img,video{display:block;max-width:100%}
 .arrow:disabled{opacity:.35;cursor:default}
 .arrow svg{width:16px;height:16px}
 
-.deck{position:fixed;inset:var(--head) 0 var(--foot)}
+.deck{position:fixed;inset:var(--head) 0 calc(var(--foot) + var(--sb))}
+/* on phones the browser bars take part of the screen: size to what is really visible */
+@supports (height:100dvh){:root{--vh:100dvh}html,body{height:100dvh}}
+.top,.bottom{padding-left:calc(var(--pad) + var(--sl));padding-right:calc(var(--pad) + var(--sr))}
+.bottom{height:calc(var(--foot) + var(--sb));padding-bottom:var(--sb)}
 .slide{position:absolute;inset:0;padding:clamp(12px,3vh,32px) var(--pad);display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:clamp(24px,5vw,80px);align-items:center;opacity:0;visibility:hidden;transform:translateX(24px);transition:opacity .45s var(--ease),transform .5s var(--ease),visibility 0s .5s}
+.slide{padding-left:calc(var(--pad) + var(--sl));padding-right:calc(var(--pad) + var(--sr))}
 .slide.on{opacity:1;visibility:visible;transform:none;transition:opacity .45s var(--ease),transform .5s var(--ease)}
 .slide.back{transform:translateX(-24px)}
 .slide > *{min-height:0}
@@ -225,12 +233,23 @@ p b{color:var(--ink);font-weight:700}
 
 /* short screens (phone sideways) */
 @media (max-height:560px){
-  :root{--head:44px;--foot:46px}
-  .slide{padding-top:6px;padding-bottom:6px}
-  .num{margin-bottom:6px;font-size:11px}
+  :root{--head:42px;--foot:48px;--pad:clamp(28px,6vw,56px)}
+  .top{font-size:12px}
+  .slide{padding-top:12px;padding-bottom:12px;gap:clamp(20px,4vw,40px);overflow-y:auto}
+  .num{margin-bottom:6px;font-size:10px}
+  h2{font-size:clamp(20px,6.4vh,30px)}
+  .intro h1{font-size:clamp(30px,11vh,52px)}
+  p{font-size:clamp(12.5px,3.4vh,15px);line-height:1.45}
   p,.text > p:first-of-type{margin-top:8px}
+  .steps li{font-size:clamp(12.5px,3.4vh,15px)}
+  .reasons h3{font-size:14px}.reasons p{font-size:12.5px}.reasons .n{font-size:20px}.reasons > div{grid-template-columns:30px 1fr;gap:10px}
+  .cards > div{padding:12px}.cards h3{font-size:15px}.cards p{font-size:12.5px}
+  .row h3{font-size:14px}.row p{font-size:12.5px}.row{grid-template-columns:96px 1fr}
+  .bar-row .top-line{font-size:14px}.bar-row p{font-size:12px;margin-top:3px}.track{height:10px}
+  .arrow{width:34px;height:34px}
+  .tabs{max-width:none}.tabs button{padding:6px 2px;font-size:12px}
   .steps{margin-top:10px}.steps li{padding:6px 0}
-  .tabs{margin-top:10px}.tabs button{padding:6px 10px;font-size:13px}
+  .tabs{margin-top:10px}
   .seg{margin-bottom:8px}.seg button{padding:5px 12px;font-size:13px}
   .cards h3{margin-top:10px}
   .reasons > div{padding:8px 14px}
@@ -241,6 +260,21 @@ p b{color:var(--ink);font-weight:700}
   .end .line{margin:12px auto}
   .lbl{margin-top:3px;font-size:11px}.lbl small{display:none}
   .shirtwrap{gap:6px}.row4{gap:6px}
+}
+/* very short screens (small phones sideways, with browser bars) */
+@media (max-height:380px){
+  .slide{padding-top:8px;padding-bottom:8px}
+  h2{font-size:19px}
+  p,.steps li{font-size:12px;line-height:1.4}
+  p,.text > p:first-of-type{margin-top:6px}
+  .steps{margin-top:6px}.steps li{padding:3px 0;grid-template-columns:28px 1fr}
+  .reasons{gap:6px}.reasons > div{padding:5px 12px}.reasons p{font-size:11.5px;margin-top:1px}
+  .num{margin-bottom:4px}
+}
+@media (max-height:560px){
+  .side{width:min(96px,calc((var(--avail) - 70px) / 2))}
+  .side figcaption{padding:3px 6px;font-size:10px}.side figcaption small{display:none}
+  .post video{width:min(calc(100% - 116px),calc(var(--avail) - 30px))}
 }
 /* phone upright, after "view anyway" */
 @media (max-width:700px) and (orientation:portrait){
@@ -414,7 +448,7 @@ p b{color:var(--ink);font-weight:700}
       <h2>The <em>LinkedIn post</em></h2>
       <p>The pilot flies over San Francisco with a banner, so the whole city hears about the event. The flight brings back the feeling of speed.</p>
       <ol class="steps">
-        <li><span><b>ChatGPT</b> created the San Francisco background. I asked for a simpler, flatter version that fits Pi.</span></li>
+        <li><span><b>ChatGPT</b> created the San Francisco background, in a simple, flat style that fits Pi.</span></li>
         <li><span><b>Claude Code</b> built the animation: the flight, the banner and the typed text.</span></li>
       </ol>
     </div>
